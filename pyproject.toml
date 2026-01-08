@@ -1,0 +1,15 @@
+[project]
+name = "ost-pyfat-api"
+version = "0.1-dev"
+title = "OSTrails pyfat API Service"
+description = "The project is developing a standard interoperability framework called FAIR-IF to ensure that different FAIR assessment implementations can call pyFAT tests."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dynaconf>=3.2.12",
+    "fastapi>=0.121.0",
+    "pyld>=2.0.4",
+    "rdflib>=7.4.0",
+    "tomli>=2.3.0",
+    "uvicorn>=0.38.0",
+]

@@ -9,6 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.ost_pyfat_api.api.v1 import root, tests, metrics
 from src.ost_pyfat_api.infra.commons import app_settings, get_project_details, build_date
+from src.ost_pyfat_api.utils.metrics_processor import MetricsProcessor
 
 APP_NAME = os.environ.get("APP_NAME", "OSTrails Clarin SKG-IF Service")
 EXPOSE_PORT = os.environ.get("EXPOSE_PORT", 41012)
@@ -35,7 +36,11 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
-    logging.info("start up")
+    metrics_file = app_settings.get("metrics_file", None)
+    logging.info(f"Using metrics file: {metrics_file}")
+    preproc = MetricsProcessor(metrics_file)
+    preproc.parse_metrics_yaml()
+    logging.debug("started up")
     yield
 
 app = FastAPI(
@@ -46,6 +51,7 @@ app = FastAPI(
     # docs_url=settings.docs_url,
     # redoc_url=settings.redoc_url,
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
+    lifespan=lifespan,
 )
 
 app.add_middleware(

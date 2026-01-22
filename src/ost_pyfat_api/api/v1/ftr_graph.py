@@ -3,7 +3,7 @@ import uuid
 from rdflib import Graph, Namespace, Literal, URIRef
 from rdflib.namespace import RDF, XSD
 
-from src.ost_pyfat_api.api.v1.models import TestResult
+from src.ost_pyfat_api.api.v1.models import TestResult, FtrTestMetadata
 
 
 class FtrClasses:
@@ -13,31 +13,33 @@ class FtrClasses:
     """
 
     def __init__(self, appname: str, version: str, scm: str):
-        self.prov = Namespace("http://www.w3.org/ns/prov#")
-        self.ftr = Namespace("https://w3id.org/ftr#")
-        self.sorg = Namespace("https://schema.org/")
-        self.fair = Namespace("https://w3id.org/fair/principles/")
-        self.xsd = Namespace("http://www.w3.org/2001/XMLSchema#")
-        self.cln = Namespace("http://www.clarin.eu/ns/rubric#")
-        self.sio = Namespace("http://semanticscience.org/resource/")
-        self.dct = Namespace("http://purl.org/dc/terms/")
-        self.dcat = Namespace("http://www.w3.org/ns/dcat#")
-
+        # Define namespaces and their prefixes in a dictionary
+        self.namespaces = {
+            'prov': Namespace("http://www.w3.org/ns/prov#"),
+            'ftr': Namespace("https://w3id.org/ftr#"),
+            'sorg': Namespace("https://schema.org/"),
+            'fair': Namespace("https://w3id.org/fair/principles/"),
+            'xsd': Namespace("http://www.w3.org/2001/XMLSchema#"),
+            'cln': Namespace("http://www.clarin.eu/ns/rubric#"),
+            'sio': Namespace("http://semanticscience.org/resource/"),
+            'dct': Namespace("http://purl.org/dc/terms/"),
+            'dcat': Namespace("http://www.w3.org/ns/dcat#"),
+            'vivo': Namespace("http://vivoweb.org/ontology/core#"),
+            'dqv': Namespace("http://www.w3.org/ns/dqv#"),
+            'dpv' : Namespace("https://w3id.org/dpv#"),
+            'doap' : Namespace("http://usefulinc.com/ns/doap#")
+        }
+        # Assign as attributes
+        for prefix, ns in self.namespaces.items():
+            setattr(self, prefix, ns)
         self.g = Graph()
         self._bind_namespaces()
-
+        # Start initialize software info
         self._initialize_software(appname, version, scm)
 
     def _bind_namespaces(self):
-        self.g.namespace_manager.bind('prov', self.prov)
-        self.g.namespace_manager.bind('ftr', self.ftr)
-        self.g.namespace_manager.bind('schema', self.sorg)
-        self.g.namespace_manager.bind('fair', self.fair)
-        self.g.namespace_manager.bind('xsd', self.xsd)
-        self.g.namespace_manager.bind('cln', self.cln)
-        self.g.namespace_manager.bind('sio', self.sio)
-        self.g.namespace_manager.bind('dct', self.dct)
-        self.g.namespace_manager.bind('dcat', self.dcat)
+        for prefix, ns in self.namespaces.items():
+            self.g.namespace_manager.bind(prefix, ns)
 
     def _initialize_software(self, appname: str, version: str, scm: str):
         app_software = URIRef("urn:software:6de8cc49-d44c-49c1-8ae4-a81142ed61ba")
@@ -65,6 +67,55 @@ class FtrClasses:
         # Until mistery solved:
         self.g.add((tstresult, self.ftr.completion, Literal(testresult.completion, datatype=XSD.decimal)))
 
+    def add_ftr_test_metadata(self, testmetadata: FtrTestMetadata) -> None:
+        test_uri = URIRef(testmetadata.uri)
+        self.g.add((test_uri, RDF.type, self.ftr.Test))
+        self.g.add((test_uri, RDF.type, self.dcat.DataService))
+        # Mandatoty fields
+        self.g.add((test_uri, self.dct.identifier, Literal(testmetadata.dcterms_identifier)))
+        self.g.add((test_uri, self.dct.title, Literal(testmetadata.dcterms_title, lang="en")))
+        self.g.add((test_uri, self.dct.description, Literal(testmetadata.dcterms_description, lang="en")))
+        self.g.add((test_uri, self.dct.license, URIRef(testmetadata.dcterms_license)))
+        self.g.add((test_uri, self.dcat.version, Literal(testmetadata.dcat_version)))
+
+        # Optional fields
+        if testmetadata.dcat_endpointDescription:
+            self.g.add((test_uri, self.dcat.endpointDescription, Literal(testmetadata.dcat_endpointDescription, lang="en")))
+        if testmetadata.dcat_endpointURL:
+            self.g.add((test_uri, self.dcat.endpointURL, URIRef(testmetadata.dcat_endpointURL)))
+        for keyword in testmetadata.dcat_keyword:
+            self.g.add((test_uri, self.dcat.keyword, Literal(keyword, lang="en")))
+        if testmetadata.vivo_abbreviation:
+            self.g.add((test_uri, self.vivo.abbreviation, Literal(testmetadata.vivo_abbreviation)))
+        if testmetadata.doap_repository:
+            self.g.add((test_uri, self.doap.repository, URIRef(testmetadata.doap_repository)))
+        if testmetadata.dcterms_type:
+            self.g.add((test_uri, self.dct.type, URIRef(testmetadata.dcterms_type)))
+        # adms:VersionNotes Literal
+        # ftr:status Literal
+        if testmetadata.dpv_isApplicableFor:
+            self.g.add((test_uri, self.dpv.isApplicableFor, URIRef(testmetadata.dpv_isApplicableFor)))
+        if testmetadata.ftr_supportedBy:
+            self.g.add((test_uri, self.ftr.supportedBy, URIRef(testmetadata.ftr_supportedBy)))
+        if testmetadata.ftr_applicationArea:
+            self.g.add((test_uri, self.ftr.applicationArea, URIRef(testmetadata.ftr_supportedBy)))
+
+
+        if testmetadata.dcat_contactPoint:
+            self.g.add((test_uri, self.dcat.contactPoint, Literal(testmetadata.dcat_contactPoint)))
+        if testmetadata.dcterms_creator:
+            self.g.add((test_uri, self.dct.creator, Literal(testmetadata.dcterms_creator)))
+        if testmetadata.rdfs_label:
+            self.g.add((test_uri, self.sorg.name, Literal(testmetadata.rdfs_label, lang="en")))
+        if testmetadata.dqv_inDimension:
+            self.g.add((test_uri, self.dqv.inDimension, URIRef(testmetadata.dqv_inDimension)))
+        for publisher in testmetadata.dcterms_publisher:
+            self.g.add((test_uri, self.dct.publisher, Literal(publisher)))
+
+
+
+
+
     def __repr__(self) -> str:
         return self.g.serialize(format='ttl')
 
@@ -75,11 +126,6 @@ class FtrClasses:
         return self.g.serialize(format='trix')
 
     def jsonld(self) -> str:
-        context = {
-            "prov": "http://www.w3.org/ns/prov#",
-            "ftr": "https://w3id.org/ftr#",
-            "dct": "http://purl.org/dc/terms/",
-            "dcat": "http://www.w3.org/ns/dcat#",
-            "schema": "https://schema.org/"
-        }
+        # Create context from all available namespaces, so JSON-ld output uses prefixes.
+        context = {prefix: str(ns) for prefix, ns in self.namespaces.items()}
         return self.g.serialize(format='json-ld', context=context, indent=2)

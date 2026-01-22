@@ -9,7 +9,9 @@ dependencies = [
     "dynaconf>=3.2.12",
     "fastapi>=0.121.0",
     "pyld>=2.0.4",
+    "pyyaml>=6.0.3",
     "rdflib>=7.4.0",
+    "requests>=2.32.5",
     "tomli>=2.3.0",
     "uvicorn>=0.38.0",
 ]

@@ -10,6 +10,10 @@ class TestResultValue(StrEnum):
     FAIL = "fail"
     INDETERMINATE = "indeterminate"
 
+@unique
+class Modality(StrEnum):
+    ANY = auto()
+    ALL = auto()
 
 @dataclass
 class TestResult:

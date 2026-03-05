@@ -11,6 +11,7 @@ from src.ost_pyfat_api.api.v1.ftr_graph import FtrClasses
 from src.ost_pyfat_api.api.v1.models import TestResult, TestResultValue, FtrTestMetadata
 from src.ost_pyfat_api.infra.commons import app_settings, API_PREFIX
 from src.ost_pyfat_api.utils.metrics_processor import MetricsProcessor
+from src.pyfat.exec_test import evaluate
 
 USER = app_settings.USER
 PASS = app_settings.PASS
@@ -39,7 +40,7 @@ async def post_test(
 
     test_body = await request.body()
     js = json.loads(test_body)
-    res = js["resource_identifier"]
+    resource_identifier = js["resource_identifier"]
 
     preproc.get_metrics_tests_id_map()
     if not preproc.is_valid_testid(tst_id):
@@ -49,21 +50,10 @@ async def post_test(
             content={"detail": f"Test ID[{tst_id}] not found."},
         )
 
-    # Execute TEST logic here ...
-    dummy_test_result = TestResult(
-        result=TestResultValue.PASS.value,
-        completion=100,
-        testid=tst_id,
-        metricid=tst_id.rsplit("-", 1)[0],
-        testdescription="Dummy test description",
-        testname="DummyTest Name",
-        log="No issues found.",
-        resource_identifier=res,
-        gentime=datetime.now()
-    )
+    test_result = evaluate(tst_id, resource_identifier)
 
     ftr_output = FtrClasses(appname="pyFAT", version="0.1.4", scm="https://github.com/knaw-huc/ost-pyfat-api")
-    ftr_output.add_testresult(dummy_test_result)
+    ftr_output.add_testresult(test_result)
 
     try:
         if accept and "text/turtle" in accept:
@@ -77,7 +67,7 @@ async def post_test(
         logging.exception("Failed to run test")
         return JSONResponse(
             status_code=502,
-            content={"detail": f"Failed to run test[{tst_id}] for res[{res}]", "error": str(exc)},
+            content={"detail": f"Failed to run test[{tst_id}] for res[{resource_identifier}]", "error": str(exc)},
         )
 
 

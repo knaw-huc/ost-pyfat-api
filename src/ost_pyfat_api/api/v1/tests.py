@@ -11,6 +11,8 @@ from src.ost_pyfat_api.api.v1.ftr_graph import FtrClasses
 from src.ost_pyfat_api.api.v1.models import TestResult, TestResultValue
 from src.ost_pyfat_api.infra.commons import app_settings, API_PREFIX
 
+import requests
+
 USER = app_settings.USER
 PASS = app_settings.PASS
 ENDPOINT = app_settings.ENDPOINT
@@ -37,14 +39,35 @@ async def post_test(
     js = json.loads(test_body)
     res = js["resource_identifier"]
 
-    logging.debug(f"Run test[{id}] for resource[{res}]")
+    logging.debug(f"Run test[%s] for resource[%s]",id,res)
 
     data = {"resource_identifier": res}
     # Execute TEST logic here ...
 
+    logging.debug(f'res: %s', res)
+
+    headers = {'Accept': 'application/x-cmdi+xml'}
+    url = f'http://hdl.handle.net/{res}'
+    logging.debug(f'url: %s', url)
+    response = requests.post(url, headers=headers, timeout=10)
+    logging.info(f"Status: %s",response.status_code)
+    logging.debug(f"Body preview: %s", response.text)
+
+# indien geen cmdi in reponse dan None
+# anders vlo facetten:
+    url = res.replace(':','_58_').replace('/','_47_')
+    vlo = 'https://beta-vlo.clarin.eu/api/records/'
+    logging.debug(f'url 2: {vlo}{url}')
+    headers = {'Accept': 'application/json'}
+    response = requests.get(f'{vlo}{url}', timeout=10)
+    logging.info("Status 2: %s", response.status_code)
+    logging.debug("Body preview 2: %s", response.text)
+    res_json = json.loads(response.text)
+
+
 
     dummy_test_result = TestResult(
-        result=TestResultValue.PASS.value,
+        result=res_json, # TestResultValue.PASS.value,
         completion=100,
         testid=id,
         metricid=id.rsplit("-", 1)[0],

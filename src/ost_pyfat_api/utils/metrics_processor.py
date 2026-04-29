@@ -25,6 +25,7 @@ class MetricsProcessor:
         """Initialize the singleton instance"""
         cls._metrics_file_location = metrics_file
         cls._metrics_version = None
+        cls._metrics_infra = None
         cls._metrics_list = []
         cls._metrics_loc = None
         cls._metrics_total = 0
@@ -48,6 +49,7 @@ class MetricsProcessor:
             metrics_specs = yaml.load(file, Loader=yaml.FullLoader)
             cls._metrics_list = metrics_specs['metrics']
             cls._metrics_version = metrics_specs['config']['metric_version']
+            cls._metrics_infra = metrics_specs['config']['metric_infra']
             cls._metrics_created_by = metrics_specs['created_by']
             cls._metrics_ns = metrics_specs['config']['metric_namespaces']
         for metric in cls._metrics_list:
@@ -111,3 +113,7 @@ class MetricsProcessor:
                 if test.get('metric_test_identifier') == metric_test_identifier:
                     return test
         return None
+    
+    @classmethod
+    def get_infrastructure(cls) -> str | None:
+        return cls._metrics_infra

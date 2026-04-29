@@ -1,4 +1,4 @@
-import json
+import importlib
 import logging
 import os
 from src.ost_pyfat_api.api.v1.models import TestResult, TestResultValue, Modality
@@ -10,6 +10,10 @@ from saxonche import PySaxonProcessor, PyXdmValue, PySaxonApiError
 
 preproc = MetricsProcessor(app_settings.get("metrics_file", None))
 
+def get_variables(infra:str,res:str) -> dict:
+    mod = importlib.import_module(f"src.pyfat.{infra}")
+    func = getattr(mod,"get_variables")
+    return func(res)
 
 def get_xproc(proc: PySaxonProcessor):
     xpproc = proc.new_xquery_processor()
@@ -27,6 +31,10 @@ def evaluate(tst_id: str, resource_identifier: str) -> TestResult:
 
         preproc = MetricsProcessor(app_settings.get("metrics_file", None))
         xslt_result = None  # Set to indeterminate
+        infra = preproc.get_infrastructure()
+        if infra==None:
+            infra="clarin"
+        vars = get_variables(infra,resource_identifier)
         metric_test = preproc.get_metrictest_by_testid(tst_id)
 
         #- metric_test_identifier: CLFIP-F2-01M-1
@@ -42,11 +50,10 @@ def evaluate(tst_id: str, resource_identifier: str) -> TestResult:
             # In Xpath handler...
             xpproc = get_xproc(proc)
 
-            # TODO: Get the CMDI file from the resource_identifier, somehow?
-            # curl -L -H "Accept: application/x-cmdi+xml"
-            # For now we will use a static CMDI file:
-            cmdi_record_path = resources.files("resources.cmdi").joinpath("albac.xml")
-            xpproc.set_context(file_name=str(cmdi_record_path))
+            cmdi = proc.parse_xml(xml_file_name=resources.files("resources.cmdi").joinpath("albac.xml"))
+            if "CMDI" in vars:
+                 cmdi = proc.parse_xml(xml_text=vars["CMDI"])
+            xpproc.set_context(xdm_item=cmdi)
             xpath_tst = metric_test_requirement["test"].split("xpath:", 1)[1]
             logging.info(f'\t\t=> Test XPath: {xpath_tst}, modality: {metric_test_requirement["modality"]}')
             log = log + f'Test modality = {metric_test_requirement["modality"]}'

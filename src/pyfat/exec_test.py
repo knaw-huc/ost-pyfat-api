@@ -57,8 +57,8 @@ def evaluate(tst_id: str, resource_identifier: str) -> TestResult:
                  cmdi = proc.parse_xml(xml_text=vars["CMDI"])
             if cmdi:
                 xpproc.set_context(xdm_item=cmdi)
-            #else: 
-            #    TODO: fail!
+            else: 
+                raise Exception("CMDI is unavailable!")
             xpath_tst = metric_test_requirement["test"].split("xpath:", 1)[1]
             logging.info(f'\t\t=> Test XPath: {xpath_tst}, modality: {metric_test_requirement["modality"]}')
             log = log + f'Test modality = {metric_test_requirement["modality"]}'

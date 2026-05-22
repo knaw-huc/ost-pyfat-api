@@ -37,26 +37,26 @@ async def post_test(
         request: Request = None,
         accept: Optional[str] = Header(None)
 ):
-    logging.debug(f"Run test with test id=%s", tst_id)
-
-    test_body = await request.body()
-    js = json.loads(test_body)
-    resource_identifier = js["resource_identifier"]
-
-    preproc.get_metrics_tests_id_map()
-    if not preproc.is_valid_testid(tst_id):
-        logging.error(f"Test ID[{tst_id}] not found in preprocessor metrics tests map.")
-        return JSONResponse(
-            status_code=404,
-            content={"detail": f"Test ID[{tst_id}] not found."},
-        )
-
-    test_result = evaluate(tst_id, resource_identifier)
-
-    ftr_output = FtrClasses(appname="pyFAT", version="0.1.4", scm="https://github.com/knaw-huc/ost-pyfat-api")
-    ftr_output.add_testresult(test_result)
-
     try:
+        logging.debug(f"Run test with test id=%s", tst_id)
+
+        test_body = await request.body()
+        js = json.loads(test_body)
+        resource_identifier = js["resource_identifier"]
+
+        preproc.get_metrics_tests_id_map()
+        if not preproc.is_valid_testid(tst_id):
+            logging.error(f"Test ID[{tst_id}] not found in preprocessor metrics tests map.")
+            return JSONResponse(
+                status_code=404,
+                content={"detail": f"Test ID[{tst_id}] not found."},
+            )
+
+        test_result = evaluate(tst_id, resource_identifier)
+
+        ftr_output = FtrClasses(appname="pyFAT", version="0.1.4", scm="https://github.com/knaw-huc/ost-pyfat-api")
+        ftr_output.add_testresult(test_result)
+
         if accept and "text/turtle" in accept:
             # Serialize to Turtle
             return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")

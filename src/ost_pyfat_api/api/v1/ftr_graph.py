@@ -1,6 +1,6 @@
 import uuid
 
-from rdflib import Graph, Namespace, Literal, URIRef
+from rdflib import ConjunctiveGraph, Namespace, Literal, URIRef
 from rdflib.namespace import RDF, XSD
 
 from src.ost_pyfat_api.api.v1.models import TestResult, FtrTestMetadata
@@ -32,7 +32,8 @@ class FtrClasses:
         # Assign as attributes
         for prefix, ns in self.namespaces.items():
             setattr(self, prefix, ns)
-        self.g = Graph()
+        #self.g = ConjunctiveGraph(identifier="http://www.example.com/")
+        self.g = ConjunctiveGraph()
         self._bind_namespaces()
         # Start initialize software info
         self._initialize_software(appname, version, scm)

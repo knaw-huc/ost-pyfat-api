@@ -5,7 +5,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Request, Path
 from fastapi import Header
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import Response, JSONResponse, PlainTextResponse
 
 from src.ost_pyfat_api.api.v1.ftr_graph import FtrClasses
 from src.ost_pyfat_api.api.v1.models import TestResult, TestResultValue, FtrTestMetadata
@@ -26,6 +26,7 @@ preproc = MetricsProcessor(app_settings.get("metrics_file", None))
         "content": {
             "application/ld+json": {},
             "text/turtle": {},
+            "application/xml": {},
         },
         "description": "Successful Response",
     },
@@ -58,10 +59,14 @@ async def post_test(
     try:
         if accept and "text/turtle" in accept:
             # Serialize to Turtle
-            return JSONResponse(content=ftr_output.ttl(), media_type="text/turtle")
-        else:
-            # Default JSON-LD
-            return JSONResponse(content=ftr_output.jsonld(), media_type="application/ld+json")
+            return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")
+        else: 
+            if accept and "application/xml" in accept:
+                # Serialize to Trix
+                return Response(content=ftr_output.trix(), media_type="application/xml")
+            else:
+                # Default JSON-LD
+                return Response(content=ftr_output.jsonld(), media_type="application/ld+json")
 
     except Exception as exc:
         logging.exception("Failed to run test")

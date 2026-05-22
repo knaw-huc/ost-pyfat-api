@@ -49,7 +49,8 @@ class MetricsProcessor:
             metrics_specs = yaml.load(file, Loader=yaml.FullLoader)
             cls._metrics_list = metrics_specs['metrics']
             cls._metrics_version = metrics_specs['config']['metric_version']
-            cls._metrics_infra = metrics_specs['config']['metric_infra']
+            if 'metric_infrastructure' in metrics_specs['config']:
+                cls._metrics_infra = metrics_specs['config']['metric_infrastructure']
             cls._metrics_created_by = metrics_specs['created_by']
             cls._metrics_ns = metrics_specs['config']['metric_namespaces']
         for metric in cls._metrics_list:

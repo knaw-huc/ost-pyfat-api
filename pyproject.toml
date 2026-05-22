@@ -8,6 +8,7 @@ requires-python = ">=3.12"
 dependencies = [
     "dynaconf>=3.2.12",
     "fastapi>=0.121.0",
+    "idutils>=1.6.0",
     "pyld>=2.0.4",
     "pyyaml>=6.0.3",
     "rdflib>=7.4.0",

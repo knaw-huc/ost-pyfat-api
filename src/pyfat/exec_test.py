@@ -34,7 +34,9 @@ def evaluate(tst_id: str, resource_identifier: str) -> TestResult:
         infra = preproc.get_infrastructure()
         if infra==None:
             infra="clarin"
+        logging.info(f"Infrastructure: {infra}")
         vars = get_variables(infra,resource_identifier)
+        logging.info(f"Variables: {vars}")
         metric_test = preproc.get_metrictest_by_testid(tst_id)
 
         #- metric_test_identifier: CLFIP-F2-01M-1
@@ -50,10 +52,13 @@ def evaluate(tst_id: str, resource_identifier: str) -> TestResult:
             # In Xpath handler...
             xpproc = get_xproc(proc)
 
-            cmdi = proc.parse_xml(xml_file_name=resources.files("resources.cmdi").joinpath("albac.xml"))
+            cmdi=None
             if "CMDI" in vars:
                  cmdi = proc.parse_xml(xml_text=vars["CMDI"])
-            xpproc.set_context(xdm_item=cmdi)
+            if cmdi:
+                xpproc.set_context(xdm_item=cmdi)
+            #else: 
+            #    TODO: fail!
             xpath_tst = metric_test_requirement["test"].split("xpath:", 1)[1]
             logging.info(f'\t\t=> Test XPath: {xpath_tst}, modality: {metric_test_requirement["modality"]}')
             log = log + f'Test modality = {metric_test_requirement["modality"]}'

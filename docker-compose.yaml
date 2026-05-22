@@ -1,0 +1,15 @@
+services:
+
+  pyfat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:41012"
+
+  util-server:
+    image: ghcr.io/knaw-huc/util-server:1.0.rc5
+    restart: unless-stopped
+    ports:
+      - "8000:8000"

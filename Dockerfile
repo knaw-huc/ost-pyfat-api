@@ -41,7 +41,7 @@ COPY README.md .
 COPY uv.lock .
 
 
-RUN uv venv .venv
+RUN uv venv --clear .venv
 # Install dependencies
 
 #RUN uv sync --frozen --no-cache

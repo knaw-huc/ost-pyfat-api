@@ -157,12 +157,12 @@ async def get_test_by_id(tst_id: str, accept: Optional[str] = Header(None)):
     ftr_output.add_ftr_test_metadata(test_metadata)
 
     try:
-        if accept and "text/turtle" in accept:
-            # Serialize to Turtle
-            return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")
-        else:
-            # Default JSON-LD
+        if accept and "application/ld+json" in accept:
+            # JSON-LD
             return PlainTextResponse(content=ftr_output.jsonld(), media_type="application/ld+json")
+        else:
+            # Defaulr Turtle
+            return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")
 
     except Exception as exc:
         logging.exception("Failed to get test metadata")

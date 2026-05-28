@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from enum import unique, StrEnum, auto
 from typing import List, Optional
 
+from pydantic import BaseModel
+
 
 @unique
 class TestResultValue(StrEnum):
@@ -55,8 +57,6 @@ class FtrTestMetadata:
     dqv_inDimension: Optional[str] = None
     dcterms_publisher: List[str] = field(default_factory=list)
 
-
-
 @dataclass
 class FtrMetric:
     dcterms_identifier: str
@@ -72,3 +72,6 @@ class FtrMetric:
     ftr_applicationArea: Optional[str] = None
     ftr_hasPositiveValidation: str = ''
     ftr_hasNegativeValidation: str = ''
+
+class ResourceIdentifierRequest(BaseModel):
+    resource_identifier: str

@@ -5,11 +5,22 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "80:41012"
+    #ports:
+    #  - "80:41012"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.pyfat.loadbalancer.server.port=41012"
+      - "traefik.http.routers.pyfat.entrypoints=http"
+      - "traefik.http.routers.pyfat.rule=Host(`pyfat.sd.di.huc.knaw.nl`)"
+    networks:
+      - traefik-public
 
   util-server:
     image: ghcr.io/knaw-huc/util-server:1.0.rc5
     restart: unless-stopped
     ports:
       - "8000:8000"
+
+networks:
+  traefik-public:
+    external: true

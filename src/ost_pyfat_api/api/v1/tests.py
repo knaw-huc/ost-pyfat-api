@@ -35,29 +35,10 @@ async def post_test(
         tst_id: str = Path(..., description="Identifier of the test to run."),
         accept: Optional[str] = Header(None)
 ):
-    resource_identifier = request_body.resource_identifier
-    logging.debug(f"Run test with test id={tst_id} and resource {resource_identifier}")
-
-
-    preproc.get_metrics_tests_id_map()
-    if not preproc.is_valid_testid(tst_id):
-        logging.error(f"Test ID[{tst_id}] not found in preprocessor metrics tests map.")
-        return JSONResponse(
-            status_code=404,
-            content={"detail": f"Test ID[{tst_id}] not found."},
-        )
-
-    test_result = evaluate(tst_id, resource_identifier)
-
-    ftr_output = FtrClasses(appname="pyFAT", version="0.1.4", scm="https://github.com/knaw-huc/ost-pyfat-api")
-    ftr_output.add_testresult(test_result)
-
     try:
-        logging.debug(f"Run test with test id=%s", tst_id)
+        resource_identifier = request_body.resource_identifier
+        logging.debug(f"Run test with test id={tst_id} and resource {resource_identifier}")
 
-        test_body = await request.body()
-        js = json.loads(test_body)
-        resource_identifier = js["resource_identifier"]
 
         preproc.get_metrics_tests_id_map()
         if not preproc.is_valid_testid(tst_id):

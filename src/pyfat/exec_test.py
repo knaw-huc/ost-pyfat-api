@@ -93,11 +93,12 @@ def evaluate(tst_id: str, resource_identifier: str) -> TestResult:
                 logging.error(f"\t\tError executing Xpath test: {xpath_tst}: {err}")
                 xslt_result = None
 
-            for item in xslt_result:
-                print("xslt_result: "+item.string_value)
+            if xslt_result is not None:
+                for item in xslt_result:
+                    print("xslt_result: "+item.string_value)
 
-            if all(isinstance(item, PyXdmValue) and item.string_value in ["true", "false"] for item in xslt_result):
-                print("All items in xslt_result are boolean strings.")
+                if all(isinstance(item, PyXdmValue) and item.string_value in ["true", "false"] for item in xslt_result):
+                    print("All items in xslt_result are boolean strings.")
 
             if xslt_result and all(hasattr(item, 'string_value') and item.string_value in ["true", "false"] for item in xslt_result):
 

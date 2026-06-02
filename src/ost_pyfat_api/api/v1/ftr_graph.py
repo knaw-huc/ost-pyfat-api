@@ -73,7 +73,8 @@ class FtrClasses:
         self.g.add((test_uri, RDF.type, self.ftr.Test))
         self.g.add((test_uri, RDF.type, self.dcat.DataService))
         # Mandatoty fields
-        self.g.add((test_uri, self.dct.identifier, Literal(testmetadata.dcterms_identifier)))
+        self.g.add((test_uri, self.dct.creator, URIRef("https://ror.org/043c0p156")))
+        self.g.add((test_uri, self.dct.identifier, test_uri))
         self.g.add((test_uri, self.dct.title, Literal(testmetadata.dcterms_title, lang="en")))
         self.g.add((test_uri, self.dct.description, Literal(testmetadata.dcterms_description, lang="en")))
         self.g.add((test_uri, self.dct.license, URIRef(testmetadata.dcterms_license)))

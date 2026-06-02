@@ -66,6 +66,7 @@ class SettingsWrapper:
 app_settings = SettingsWrapper(_raw_app_settings)
 API_PREFIX = getattr(app_settings, "API_PREFIX", None) or app_settings.get("API_PREFIX", None) or os.environ.get("API_PREFIX", None)
 API_PREFIX = _normalize_prefix(API_PREFIX)
+DOMAIN = getattr(app_settings, "DOMAIN", None) or app_settings.get("DOMAIN", None) or os.environ.get("DOMAIN", None)
 
 # avoid printing settings at import time (noisy in logs)
 # print(app_settings.to_dict())  # commented out

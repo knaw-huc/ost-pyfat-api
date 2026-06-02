@@ -8,7 +8,7 @@ from fastapi.responses import Response, JSONResponse, PlainTextResponse
 
 from src.ost_pyfat_api.api.v1.ftr_graph import FtrClasses
 from src.ost_pyfat_api.api.v1.models import TestResult, TestResultValue, FtrTestMetadata, ResourceIdentifierRequest
-from src.ost_pyfat_api.infra.commons import app_settings, API_PREFIX
+from src.ost_pyfat_api.infra.commons import app_settings, API_PREFIX, DOMAIN
 from src.ost_pyfat_api.utils.metrics_processor import MetricsProcessor
 from src.pyfat.exec_test import evaluate
 
@@ -91,12 +91,13 @@ async def get_all_tests(accept: Optional[str] = Header(None)):
         metric_test = preproc.get_metrictest_by_testid(tst_id)
         # Create FTRTest metadata
         test_metadata = FtrTestMetadata(
-            uri=f"urn:pyFATtest:{tst_id}",
+            uri=f"{DOMAIN}{API_PREFIX}/tests/{tst_id}",
             dcterms_identifier=f"urn:fairtestoutput:{tst_id}",
             dcterms_title=metric_test.get("metric_test_name", None),
             dcterms_description=metric_test['metric_test_requirements'][0]['test'],
             dcterms_license="https://creativecommons.org/publicdomain/zero/1.0/",
-            dcat_version=preproc.get_metrics_version()
+            dcat_version=preproc.get_metrics_version(),
+            dcat_endpointURL=f"{DOMAIN}{API_PREFIX}/test/assess/{tst_id}"
         )
 
         ftr_output.add_ftr_test_metadata(test_metadata)
@@ -145,12 +146,13 @@ async def get_test_by_id(tst_id: str, accept: Optional[str] = Header(None)):
 
     # Create FTRTest metadata response
     test_metadata = FtrTestMetadata(
-        uri=f"urn:pyFATtest:{tst_id}",
+        uri=f"{DOMAIN}{API_PREFIX}/tests/{tst_id}",
         dcterms_identifier=f"urn:fairtestoutput:{tst_id}",
         dcterms_title=metric_test.get("metric_test_name", None),
         dcterms_description=metric_test['metric_test_requirements'][0]['test'],
         dcterms_license="https://creativecommons.org/publicdomain/zero/1.0/",
-        dcat_version=preproc.get_metrics_version()
+        dcat_version=preproc.get_metrics_version(),
+        dcat_endpointURL=f"{DOMAIN}{API_PREFIX}/test/assess/{tst_id}"
     )
 
     ftr_output = FtrClasses(appname="pyFAT", version="0.1.4", scm="https://github.com/knaw-huc/ost-pyfat-api")

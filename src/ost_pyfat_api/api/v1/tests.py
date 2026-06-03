@@ -70,16 +70,14 @@ async def post_test(
         ftr_output = _new_ftr_output()
         ftr_output.add_testresult(test_result)
 
-        if accept and "text/turtle" in accept:
-            # Serialize to Turtle
-            return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")
-        else: 
-            if accept and "application/xml" in accept:
+        if accept and "application/ld+json" in accept:
+            # Serialize to JSON-LD
+            return PlainTextResponse(content=ftr_output.jsonld(), media_type="application/ld+json")
+        elif accept and "application/xml" in accept:
                 # Serialize to Trix
                 return Response(content=ftr_output.trix(), media_type="application/xml")
-            else:
-                # Default JSON-LD
-                return Response(content=ftr_output.jsonld(), media_type="application/ld+json")
+        else: # Default Turtle
+            return Response(content=ftr_output.ttl(), media_type="text/turtle")
 
     except Exception as exc:
         logging.exception("Failed to run test")
@@ -87,7 +85,6 @@ async def post_test(
             status_code=502,
             content={"detail": f"Failed to run test[{tst_id}] for res[{resource_identifier}]", "error": str(exc)},
         )
-
 
 @router.get("/tests/", tags=["Tests"], summary="Get all tests", description="Returns metadata for all available tests.",
             responses={
@@ -108,12 +105,12 @@ async def get_all_tests(accept: Optional[str] = Header(None)):
         ftr_output.add_ftr_test_metadata(_build_test_metadata(tst_id))
 
     try:
-        if accept and "text/turtle" in accept:
-            # Serialize to Turtle
-            return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")
-        else:
-            # Default JSON-LD
+        if accept and "application/ld+json" in accept:
+            # JSON-LD
             return PlainTextResponse(content=ftr_output.jsonld(), media_type="application/ld+json")
+        else:
+            # Defaulr Turtle
+            return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")
 
     except Exception as exc:
         logging.exception("Failed to get test metadata")

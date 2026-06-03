@@ -50,7 +50,7 @@ class FtrClasses:
         self.g.add((app_software, self.sorg.name, Literal(appname)))
 
     def add_testresult(self, testresult: TestResult):
-        tstresult = URIRef(f"urn:{testresult.testid}-{uuid.uuid4()}")
+        tstresult = URIRef(f"urn:fairtestoutput:{uuid.uuid4()}")
         self._add_testresult_triples(tstresult, testresult)
 
     def _add_testresult_triples(self, tstresult, testresult):

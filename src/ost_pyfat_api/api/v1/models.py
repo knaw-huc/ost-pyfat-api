@@ -37,8 +37,9 @@ class FtrTestMetadata:
     dcterms_title: str
     dcterms_description: str
 
+    dcat_endpointURL: str
     dcat_endpointDescription: Optional[str] = None
-    dcat_endpointURL: Optional[str] = None
+    dcat_landingpage: Optional[str] = None
     dcat_keyword: List[str] = field(default_factory=list)
     vivo_abbreviation: Optional[str] = None
     doap_repository: Optional[str] = None

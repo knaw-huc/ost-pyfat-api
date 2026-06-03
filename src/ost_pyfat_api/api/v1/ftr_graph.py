@@ -83,6 +83,8 @@ class FtrClasses:
         # Optional fields
         if testmetadata.dcat_endpointDescription:
             self.g.add((test_uri, self.dcat.endpointDescription, Literal(testmetadata.dcat_endpointDescription, lang="en")))
+        if testmetadata.dcat_landingpage:
+            self.g.add((test_uri, self.dcat.landingPage, URIRef(testmetadata.dcat_landingpage)))
         if testmetadata.dcat_endpointURL:
             self.g.add((test_uri, self.dcat.endpointURL, URIRef(testmetadata.dcat_endpointURL)))
         for keyword in testmetadata.dcat_keyword:

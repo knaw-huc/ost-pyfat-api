@@ -19,6 +19,23 @@ router = APIRouter(prefix=API_PREFIX)
 
 preproc = MetricsProcessor(app_settings.get("metrics_file", None))
 
+def _build_test_metadata(tst_id: str) -> FtrTestMetadata:
+    """Create FTR test metadata for a given test id."""
+    metric_test = preproc.get_metrictest_by_testid(tst_id)
+    return FtrTestMetadata(
+        uri=f"{DOMAIN}{API_PREFIX}/tests/{tst_id}",
+        dcterms_identifier=f"urn:fairtestoutput:{tst_id}",
+        dcterms_title=metric_test.get("metric_test_name", None),
+        dcterms_description=metric_test["metric_test_requirements"][0]["test"],
+        dcterms_license="https://creativecommons.org/publicdomain/zero/1.0/",
+        dcat_version=preproc.get_metrics_version(),
+        dcat_endpointURL=f"{DOMAIN}{API_PREFIX}/test/assess/{tst_id}",
+        dcat_landingpage=f"{DOMAIN}{API_PREFIX}/tests/{tst_id}",
+    )
+
+def _new_ftr_output() -> FtrClasses:
+    return FtrClasses(appname="pyFAT", version="0.1.4", scm="https://github.com/knaw-huc/ost-pyfat-api")
+
 @router.post("/test/assess/{tst_id:path}", tags=["Tests"], responses={
     200: {
         "content": {
@@ -50,7 +67,7 @@ async def post_test(
 
         test_result = evaluate(tst_id, resource_identifier)
 
-        ftr_output = FtrClasses(appname="pyFAT", version="0.1.4", scm="https://github.com/knaw-huc/ost-pyfat-api")
+        ftr_output = _new_ftr_output()
         ftr_output.add_testresult(test_result)
 
         if accept and "text/turtle" in accept:
@@ -85,22 +102,10 @@ async def post_test(
             })
 async def get_all_tests(accept: Optional[str] = Header(None)):
 
-    ftr_output = FtrClasses(appname="pyFAT", version="0.1.4", scm="https://github.com/knaw-huc/ost-pyfat-api")
+    ftr_output = _new_ftr_output()
 
     for tst_id in preproc.all_test_ids():
-        metric_test = preproc.get_metrictest_by_testid(tst_id)
-        # Create FTRTest metadata
-        test_metadata = FtrTestMetadata(
-            uri=f"{DOMAIN}{API_PREFIX}/tests/{tst_id}",
-            dcterms_identifier=f"urn:fairtestoutput:{tst_id}",
-            dcterms_title=metric_test.get("metric_test_name", None),
-            dcterms_description=metric_test['metric_test_requirements'][0]['test'],
-            dcterms_license="https://creativecommons.org/publicdomain/zero/1.0/",
-            dcat_version=preproc.get_metrics_version(),
-            dcat_endpointURL=f"{DOMAIN}{API_PREFIX}/test/assess/{tst_id}"
-        )
-
-        ftr_output.add_ftr_test_metadata(test_metadata)
+        ftr_output.add_ftr_test_metadata(_build_test_metadata(tst_id))
 
     try:
         if accept and "text/turtle" in accept:
@@ -141,21 +146,8 @@ async def get_test_by_id(tst_id: str, accept: Optional[str] = Header(None)):
             status_code=404,
             content={"detail": f"Test ID[{tst_id}] not found."},
         )
-
-    metric_test = preproc.get_metrictest_by_testid(tst_id)
-
-    # Create FTRTest metadata response
-    test_metadata = FtrTestMetadata(
-        uri=f"{DOMAIN}{API_PREFIX}/tests/{tst_id}",
-        dcterms_identifier=f"urn:fairtestoutput:{tst_id}",
-        dcterms_title=metric_test.get("metric_test_name", None),
-        dcterms_description=metric_test['metric_test_requirements'][0]['test'],
-        dcterms_license="https://creativecommons.org/publicdomain/zero/1.0/",
-        dcat_version=preproc.get_metrics_version(),
-        dcat_endpointURL=f"{DOMAIN}{API_PREFIX}/test/assess/{tst_id}"
-    )
-
-    ftr_output = FtrClasses(appname="pyFAT", version="0.1.4", scm="https://github.com/knaw-huc/ost-pyfat-api")
+    test_metadata = _build_test_metadata(tst_id)
+    ftr_output = _new_ftr_output()
     ftr_output.add_ftr_test_metadata(test_metadata)
 
     try:

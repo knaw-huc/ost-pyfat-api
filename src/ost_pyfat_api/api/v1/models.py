@@ -28,6 +28,7 @@ class TestResult:
     log: str
     resource_identifier: str
     gentime: datetime.date
+    fromTestIRI: Optional[str] = None
 
 
 @dataclass

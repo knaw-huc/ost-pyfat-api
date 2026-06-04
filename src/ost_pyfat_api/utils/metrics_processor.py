@@ -16,8 +16,8 @@ class MetricsProcessor:
         if cls._instance is None:
             cls._instance = super(MetricsProcessor, cls).__new__(cls)
             cls._initialize(metrics_file)
-        else:
-            print('Preprocessor already exists')
+        # else:
+        #     print('Preprocessor already exists')
         return cls._instance
 
     @classmethod

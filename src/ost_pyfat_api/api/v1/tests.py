@@ -66,7 +66,7 @@ async def post_test(
             )
 
         test_result = evaluate(tst_id, resource_identifier)
-
+        test_result.fromTestIRI = f"{DOMAIN}{API_PREFIX}/tests/{tst_id}"
         ftr_output = _new_ftr_output()
         ftr_output.add_testresult(test_result)
 

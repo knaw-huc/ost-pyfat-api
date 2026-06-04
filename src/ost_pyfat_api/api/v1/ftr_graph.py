@@ -50,23 +50,24 @@ class FtrClasses:
         self.g.add((app_software, self.sorg.name, Literal(appname)))
 
     def add_testresult(self, testresult: TestResult):
-        tstresult = URIRef(f"urn:fairtestoutput:{uuid.uuid4()}")
+        tstresult = URIRef(f"urn:pyFAT:{uuid.uuid4()}")
         self._add_testresult_triples(tstresult, testresult)
 
     def _add_testresult_triples(self, tstresult, testresult):
         self.g.add((tstresult, RDF.type, self.ftr.TestResult))
-        self.g.add((tstresult, self.dct.identifier, Literal(tstresult)))
+        self.g.add((tstresult, self.dct.identifier, Literal(tstresult, datatype=XSD.string)))
         self.g.add((tstresult, self.dct.title, Literal(testresult.testname, lang="en")))
         self.g.add((tstresult, self.dct.description, Literal(testresult.testdescription, lang="en")))
         self.g.add((tstresult, self.dct.license, URIRef("https://creativecommons.org/publicdomain/zero/1.0/")))
-        self.g.add((tstresult, self.prov.value, Literal(testresult.result, lang="en")))
+        self.g.add((tstresult, self.prov.value, Literal(testresult.result)))
         self.g.add((tstresult, self.ftr.log, Literal(testresult.log)))
+        self.g.add((tstresult, self.ftr.outputFromTest, URIRef(testresult.fromTestIRI)))
         self.g.add((tstresult, self.ftr.assessmentTarget, Literal(testresult.resource_identifier)))
         self.g.add(
             (tstresult, self.prov.generatedAtTime, Literal(testresult.gentime.isoformat(), datatype=XSD.dateTime)))
         # TODO: How can one determine TEST completion as a percentage, if a test result can only be True or False or Indeterminate?
         # Until mistery solved:
-        self.g.add((tstresult, self.ftr.completion, Literal(testresult.completion, datatype=XSD.decimal)))
+        self.g.add((tstresult, self.ftr.completion, Literal(testresult.completion, datatype=XSD.integer)))
 
     def add_ftr_test_metadata(self, testmetadata: FtrTestMetadata) -> None:
         test_uri = URIRef(testmetadata.uri)

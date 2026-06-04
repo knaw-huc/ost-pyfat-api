@@ -70,14 +70,14 @@ async def post_test(
         ftr_output = _new_ftr_output()
         ftr_output.add_testresult(test_result)
 
-        if accept and "application/ld+json" in accept:
-            # Serialize to JSON-LD
-            return PlainTextResponse(content=ftr_output.jsonld(), media_type="application/ld+json")
+        if accept and "text/turtle" in accept:
+            # Serialize to Turtle
+            return Response(content=ftr_output.ttl(), media_type="text/turtle")
         elif accept and "application/xml" in accept:
                 # Serialize to Trix
                 return Response(content=ftr_output.trix(), media_type="application/xml")
-        else: # Default Turtle
-            return Response(content=ftr_output.ttl(), media_type="text/turtle")
+        else: # Default JSON-LD
+            return PlainTextResponse(content=ftr_output.jsonld(), media_type="application/ld+json")
 
     except Exception as exc:
         logging.exception("Failed to run test")
@@ -109,7 +109,7 @@ async def get_all_tests(accept: Optional[str] = Header(None)):
             # JSON-LD
             return PlainTextResponse(content=ftr_output.jsonld(), media_type="application/ld+json")
         else:
-            # Defaulr Turtle
+            # Default Turtle
             return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")
 
     except Exception as exc:
@@ -151,9 +151,6 @@ async def get_test_by_id(tst_id: str, accept: Optional[str] = Header(None)):
         if accept and "application/ld+json" in accept:
             # JSON-LD
             return PlainTextResponse(content=ftr_output.jsonld(), media_type="application/ld+json")
-        else:
-            # Defaulr Turtle
-            return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")
 
     except Exception as exc:
         logging.exception("Failed to get test metadata")

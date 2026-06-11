@@ -70,6 +70,7 @@ async def post_test(
         test_result.fromTestIRI = f"{DOMAIN}{API_PREFIX}/tests/{tst_id}"
         ftr_output = _new_ftr_output()
         ftr_output.add_testresult(test_result)
+        ftr_output.add_ftr_test_metadata(_build_test_metadata(tst_id))
 
         if accept and "text/turtle" in accept:
             # Serialize to Turtle

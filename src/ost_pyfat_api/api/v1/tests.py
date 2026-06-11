@@ -149,8 +149,10 @@ async def get_test_by_id(tst_id: str, accept: Optional[str] = Header(None)):
     ftr_output.add_ftr_test_metadata(test_metadata)
 
     try:
-        if accept and "application/ld+json" in accept:
-            # JSON-LD
+        if accept and "text/turtle" in accept:
+            # TTL
+            return PlainTextResponse(content=ftr_output.ttl(), media_type="text/turtle")
+        else: # default response for Champion:
             return PlainTextResponse(content=ftr_output.jsonld(), media_type="application/ld+json")
 
     except Exception as exc:

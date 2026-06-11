@@ -22,11 +22,12 @@ preproc = MetricsProcessor(app_settings.get("metrics_file", None))
 def _build_test_metadata(tst_id: str) -> FtrTestMetadata:
     """Create FTR test metadata for a given test id."""
     metric_test = preproc.get_metrictest_by_testid(tst_id)
+    metric = preproc.get_metric_by_testid(tst_id)
     return FtrTestMetadata(
         uri=f"{DOMAIN}{API_PREFIX}/tests/{tst_id}",
         dcterms_identifier=f"urn:fairtestoutput:{tst_id}",
         dcterms_title=metric_test.get("metric_test_name", None),
-        dcterms_description=metric_test["metric_test_requirements"][0]["test"],
+        dcterms_description=metric.get("metric_description", None),
         dcterms_license="https://creativecommons.org/publicdomain/zero/1.0/",
         dcat_version=preproc.get_metrics_version(),
         dcat_endpointURL=f"{DOMAIN}{API_PREFIX}/test/assess/{tst_id}",

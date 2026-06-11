@@ -114,7 +114,16 @@ class MetricsProcessor:
                 if test.get('metric_test_identifier') == metric_test_identifier:
                     return test
         return None
-    
+
+    @classmethod
+    def get_metric_by_testid(cls, metric_test_identifier: str) -> dict | None:
+        """Return the parent metric object (dict) for a given metric_test_identifier, or None if not found."""
+        for metric in cls._metrics_list:
+            for test in metric.get('metric_tests', []):
+                if test.get('metric_test_identifier') == metric_test_identifier:
+                    return metric
+        return None
+
     @classmethod
     def get_infrastructure(cls) -> str | None:
         return cls._metrics_infra

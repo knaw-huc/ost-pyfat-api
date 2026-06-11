@@ -107,7 +107,7 @@ metrics:
 
   - metric_identifier: CLFIP-F2-01M
     metric_number: 3
-    metric_name: "metadata schema for findability"
+    metric_name: "Metadata schema for findability"
     metric_description: "Which metadata schemas do you use for findability?"
     fair_principle: F2
     target: Metadata
@@ -128,7 +128,7 @@ metrics:
             modality: all
   - metric_identifier: CLFIP-F3-01M
     metric_number: 4
-    metric_name: "metadata linkage technology"
+    metric_name: "Metadata linkage technology"
     metric_description: "What is the technology that links the persistent identifiers of your data to the metadata description?"
     fair_principle: F3
     target: Metadata
@@ -156,7 +156,7 @@ metrics:
 
   - metric_identifier: CLFIP-F4-01M
     metric_number: 5
-    metric_name: "metadata origin"
+    metric_name: "Metadata origin"
     metric_description: "In which search engines are your metadata records indexed?"
     fair_principle: F4
     target: Metadata
@@ -179,7 +179,7 @@ metrics:
             modality: all
   - metric_identifier: CLFIP-F4-02D
     metric_number: 6
-    metric_name: "data search"
+    metric_name: "Data search"
     metric_description: "In which search engines are your datasets indexed?"
     fair_principle: F4
     target: Data
@@ -187,13 +187,13 @@ metrics:
     max_score: 5
     metric_tests:
       - metric_test_identifier: CLFIP-F4-02D-1
-        metric_test_name: "search data via a search service"
+        metric_test_name: "Search data via a search service"
         metric_test_score: 2
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='SearchService'])"
             modality: all
       - metric_test_identifier: CLFIP-F4-02D-2
-        metric_test_name: "search data via a search page"
+        metric_test_name: "Search data via a search page"
         metric_test_score: 3
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='SearchPage'])"
@@ -201,7 +201,7 @@ metrics:
 
   - metric_identifier: CLFIP-A1.1-01M
     metric_number: 7
-    metric_name: "metadata communication protocol"
+    metric_name: "Metadata communication protocol"
     metric_description: "Which standardized communication protocol do you use for metadata records?"
     fair_principle: A1.1
     target: Metadata
@@ -209,13 +209,13 @@ metrics:
     max_score: 1
     metric_tests:
       - metric_test_identifier: CLFIP-A1.1-01M-1
-        metric_test_name: "all metadata identifiers use HTTPS"
+        metric_test_name: "All metadata identifiers use HTTPS"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:empty((//cmd:MsSelfLink,//cmd:ResourceProxy[cmd:ResourceType='Metadata']/cmd:ResourceRef)[not(starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:'))])"
             modality: all
       - metric_test_identifier: CLFIP-A1.1-01M-2
-        metric_test_name: "some metadata identifiers use HTTPS"
+        metric_test_name: "Some metadata identifiers use HTTPS"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:exists((//cmd:MsSelfLink,//cmd:ResourceProxy[cmd:ResourceType='Metadata']/cmd:ResourceRef)[starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:')])"
@@ -223,7 +223,7 @@ metrics:
 
   - metric_identifier: CLFIP-A1.1-02D
     metric_number: 8
-    metric_name: "data communication protocol"
+    metric_name: "Data communication protocol"
     metric_description: "Which standardized communication protocol do you use for datasets?"
     fair_principle: A1.1
     target: Data
@@ -231,13 +231,13 @@ metrics:
     max_score: 1
     metric_tests:
       - metric_test_identifier: CLFIP-A1.1-02D-1
-        metric_test_name: "all data identifiers use HTTPS"
+        metric_test_name: "All data identifiers use HTTPS"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:empty(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef[not(starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:'))])"
             modality: all
       - metric_test_identifier: CLFIP-A1.1-02D-2
-        metric_test_name: "some data identifiers use HTTPS"
+        metric_test_name: "Some data identifiers use HTTPS"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef[starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:')])"

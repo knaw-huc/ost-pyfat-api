@@ -38,6 +38,7 @@ def evaluate(tst_id: str, resource_identifier: str) -> TestResult:
         vars = get_variables(infra,resource_identifier)
         logging.info(f"Variables: {vars}")
         metric_test = preproc.get_metrictest_by_testid(tst_id)
+        metric = preproc.get_metric_by_testid(tst_id)
 
         #- metric_test_identifier: CLFIP-F2-01M-1
         # metric_test_name: "Facet coverage score of the used CMD profile is larger than .2"
@@ -120,8 +121,8 @@ def evaluate(tst_id: str, resource_identifier: str) -> TestResult:
             completion=100,
             testid=tst_id,
             metricid=tst_id.rsplit("-", 1)[0],
-            testdescription=metric_test_requirement["test"],
-            testname=metric_test["metric_test_name"],
+            testdescription=f"OUTPUT OF: {metric.get("metric_description", None)}",
+            testname=f"{metric_test["metric_test_name"]} OUTPUT",
             log=log,
             resource_identifier=resource_identifier,
             gentime=datetime.now()

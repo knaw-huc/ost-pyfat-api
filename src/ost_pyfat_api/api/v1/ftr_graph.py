@@ -4,6 +4,7 @@ from rdflib import ConjunctiveGraph, Namespace, Literal, URIRef
 from rdflib.namespace import RDF, XSD
 
 from src.ost_pyfat_api.api.v1.models import TestResult, FtrTestMetadata
+from src.ost_pyfat_api.infra.commons import DOMAIN
 
 
 class FtrClasses:
@@ -26,13 +27,14 @@ class FtrClasses:
             'dcat': Namespace("http://www.w3.org/ns/dcat#"),
             'vivo': Namespace("http://vivoweb.org/ontology/core#"),
             'dqv': Namespace("http://www.w3.org/ns/dqv#"),
-            'dpv' : Namespace("https://w3id.org/dpv#"),
-            'doap' : Namespace("http://usefulinc.com/ns/doap#")
+            'dpv': Namespace("https://w3id.org/dpv#"),
+            'doap': Namespace("http://usefulinc.com/ns/doap#"),
+            'fgv': Namespace("https://w3id.org/foops/model/evaluation#")
         }
         # Assign as attributes
         for prefix, ns in self.namespaces.items():
             setattr(self, prefix, ns)
-        #self.g = ConjunctiveGraph(identifier="http://www.example.com/")
+        # self.g = ConjunctiveGraph(identifier="http://www.example.com/")
         self.g = ConjunctiveGraph()
         self._bind_namespaces()
         # Start initialize software info
@@ -83,7 +85,8 @@ class FtrClasses:
 
         # Optional fields
         if testmetadata.dcat_endpointDescription:
-            self.g.add((test_uri, self.dcat.endpointDescription, Literal(testmetadata.dcat_endpointDescription, lang="en")))
+            self.g.add(
+                (test_uri, self.dcat.endpointDescription, Literal(testmetadata.dcat_endpointDescription, lang="en")))
         if testmetadata.dcat_landingpage:
             self.g.add((test_uri, self.dcat.landingPage, URIRef(testmetadata.dcat_landingpage)))
         if testmetadata.dcat_endpointURL:
@@ -105,7 +108,6 @@ class FtrClasses:
         if testmetadata.ftr_applicationArea:
             self.g.add((test_uri, self.ftr.applicationArea, URIRef(testmetadata.ftr_supportedBy)))
 
-
         if testmetadata.dcat_contactPoint:
             self.g.add((test_uri, self.dcat.contactPoint, Literal(testmetadata.dcat_contactPoint)))
         if testmetadata.dcterms_creator:
@@ -116,10 +118,6 @@ class FtrClasses:
             self.g.add((test_uri, self.dqv.inDimension, URIRef(testmetadata.dqv_inDimension)))
         for publisher in testmetadata.dcterms_publisher:
             self.g.add((test_uri, self.dct.publisher, Literal(publisher)))
-
-
-
-
 
     def __repr__(self) -> str:
         return self.g.serialize(format='ttl')
@@ -134,3 +132,50 @@ class FtrClasses:
         # Create context from all available namespaces, so JSON-ld output uses prefixes.
         context = {prefix: str(ns) for prefix, ns in self.namespaces.items()}
         return self.g.serialize(format='json-ld', context=context, indent=2)
+
+    def add_guidance_triples(self, metric_id: str, preproc, is_testresult: bool = False) -> None:
+        """Add guidance RDF triples for a metric or metric test identifier.
+
+        Automatically looks up the guidance text from the metrics YAML based on whether
+        the metric_id is a metric identifier or a metric_test identifier.
+        """
+        # Determine if this is a metric ID or test ID and lookup guidance
+        metric = preproc.get_metric_by_metricid(metric_id)
+        is_test_id = metric is None
+
+        if is_test_id:
+            metric = preproc.get_metric_by_testid(metric_id)
+            test_obj = preproc.get_metrictest_by_testid(metric_id)
+            guidance_text = test_obj.get('metric_test_guidance') if test_obj else None
+        else:
+            guidance_text = preproc.get_metric_guidance_by_metricid(metric_id)
+
+        if not guidance_text:
+            # Skip if no guidance text is available
+            return
+
+        fair_principle = metric.get("fair_principle") if metric else None
+        resource_segment = "test" if is_test_id else "metric"
+        supports_target = self.ftr.TestResult if (is_testresult and is_test_id) else (self.ftr.Test if is_test_id else self.ftr.Metric)
+
+        guidance_uri = URIRef(f"{DOMAIN}/{resource_segment}/{metric_id}#guidance")
+        manifestation = URIRef(f"{DOMAIN}/{resource_segment}/{metric_id}")
+
+        self.g.add((guidance_uri, RDF.type, self.fgv.Instructions))
+        self.g.add((guidance_uri, self.dct.description, Literal(guidance_text, lang="en")))
+        self.g.add((guidance_uri, self.dct.identifier, Literal(metric_id, datatype=XSD.string)))
+        self.g.add((guidance_uri, self.dct.title, Literal(f"Guidance for {metric_id}", lang="en")))
+        self.g.add((guidance_uri, self.sorg.creator, Literal("pyFAT", datatype=XSD.string)))
+        self.g.add((guidance_uri, self.sorg.maintainer, Literal("HuC", datatype=XSD.string)))
+        self.g.add((guidance_uri, self.fgv.domain, Literal("SSH", datatype=XSD.string)))
+        self.g.add((guidance_uri, self.fgv.hasFocusArea, self.fgv.WhatFocus))
+
+        self.g.add((guidance_uri, self.fgv.isManifestedAs, manifestation))
+        self.g.add((manifestation, RDF.type, self.fgv.PersistentIdentifier))
+        self.g.add((manifestation, self.dct.identifier, Literal(metric_id, datatype=XSD.string)))
+
+        if fair_principle:
+            fair_principle_uri = URIRef(f"https://w3id.org/fair/principles/terms/{fair_principle}")
+            self.g.add((guidance_uri, self.fgv.relatesToFAIRPrinciple, fair_principle_uri))
+
+        self.g.add((guidance_uri, self.fgv.supports, supports_target))

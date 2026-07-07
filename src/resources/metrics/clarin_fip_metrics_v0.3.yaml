@@ -11,6 +11,7 @@ metrics:
     metric_number: 1
     metric_name: "Persistent metadata record identifier"
     metric_description: "What globally unique, persistent, resolvable identifiers do you use for metadata records?"
+    metric_guidance: "The metadata record should have a globally unique, persistent, resolvable identifier. This can be a DOI, Handle, ARK, PURL, or any other identifier that is globally unique and persistent."
     fair_principle: F1
     target: Metadata
     modality: any
@@ -22,36 +23,42 @@ metrics:
         metric_test_requirements:
           - test: "xpath:starts-with(//cmd:MdSelfLink, 'hdl:')"
             modality: all
+        metric_test_guidance: "The selflink should start with 'hdl:' to indicate that it is a handle."
       - metric_test_identifier: CLFIP-F1-01M-2
         metric_test_name: "Check to see if the selflink is a doi"
         metric_test_score: 0.5
         metric_test_requirements:
           - test: "xpath:starts-with(//cmd:MdSelfLink, 'doi:')"
             modality: all
+        metric_test_guidance: "The selflink should start with 'doi:' to indicate that it is a DOI."
       - metric_test_identifier: CLFIP-F1-01M-3
         metric_test_name: "Check to see if the selflink is a HTTP handle"
         metric_test_score: 0.5
         metric_test_requirements:
           - test: "xpath:starts-with(//cmd:MdSelfLink, 'http://hdl.handle.net/')"
             modality: all
+        metric_test_guidance: "The selflink should start with 'http://hdl.handle.net/' to indicate that it is a HTTP handle."
       - metric_test_identifier: CLFIP-F1-01M-4
         metric_test_name: "Check to see if the selflink is a HTTPS handle"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:starts-with(//cmd:MdSelfLink, 'https://hdl.handle.net/')"
             modality: all
+        metric_test_guidance: "The selflink should start with 'https://hdl.handle.net/' to indicate that it is a HTTPS handle."
       - metric_test_identifier: CLFIP-F1-01M-5
         metric_test_name: "Check to see if the selflink is a HTTPS doi"
         metric_test_score: 2
         metric_test_requirements:
           - test: "xpath:starts-with(//cmd:MdSelfLink, 'https://doi.org/10.') or starts-with(//cmd:MdSelfLink, 'https://dx.doi.org/10.')"
             modality: all
+        metric_test_guidance: "The selflink should start with 'https://doi.org/10.' or 'https://dx.doi.org/10.' to indicate that it is a HTTPS doi."
       - metric_test_identifier: CLFIP-F1-01M-6
         metric_test_name: "Check to see if the selflink is a HTTP doi"
         metric_test_score: 0.5
         metric_test_requirements:
           - test: "xpath:starts-with(//cmd:MdSelfLink, 'http://doi.org/10.')"
             modality: all
+        metric_test_guidance: "The selflink should start with 'http://doi.org/10.' to indicate that it is a HTTP doi."
 
   - metric_identifier: CLFIP-F1-02D
     metric_number: 2
@@ -61,6 +68,7 @@ metrics:
     target: Data
     modality: any
     max_score: 1
+    metric_guidance: "The dataset should have a globally unique, persistent, resolvable identifier. This can be a DOI, Handle, ARK, PURL, or any other identifier that is globally unique and persistent."
     metric_tests:
       - metric_test_identifier: CLFIP-F1-02D-1
         metric_test_name: "Check to see if the Resource ResourceProxy is a handle"
@@ -68,42 +76,49 @@ metrics:
         metric_test_requirements:
           - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''hdl:'') })'
             modality: any
+        metric_test_guidance: "Each ResourceProxy ResourceRef should start with 'hdl:' to indicate a handle PID."
       - metric_test_identifier: CLFIP-F1-02D-2
         metric_test_name: "Check to see if the Resource ResourceProxy is a doi"
         metric_test_score: 1
         metric_test_requirements:
           - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''doi:'') })'
             modality: any
+        metric_test_guidance: "Each ResourceProxy ResourceRef should start with 'doi:' to indicate a DOI PID."
       - metric_test_identifier: CLFIP-F1-02D-3
         metric_test_name: "Check to see if the Resource ResourceProxy is a HTTP handle"
         metric_test_score: 1
         metric_test_requirements:
           - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''http://hdl.handle.net/'') })'
             modality: any
+        metric_test_guidance: "Each ResourceProxy ResourceRef should start with 'http://hdl.handle.net/' to indicate an HTTP Handle URI."
       - metric_test_identifier: CLFIP-F1-02D-4
         metric_test_name: "Check to see if the Resource ResourceProxy is a HTTPS handle"
         metric_test_score: 1
         metric_test_requirements:
           - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''https://hdl.handle.net/'') })'
             modality: any
+        metric_test_guidance: "Each ResourceProxy ResourceRef should start with 'https://hdl.handle.net/' to indicate an HTTPS Handle URI."
       - metric_test_identifier: CLFIP-F1-02D-5
         metric_test_name: "Check to see if the Resource ResourceProxy is a HTTPS doi"
         metric_test_score: 1
         metric_test_requirements:
           - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''https://doi.org/10.'') })'
             modality: any
+        metric_test_guidance: "Each ResourceProxy ResourceRef should start with 'https://doi.org/10.' to indicate an HTTPS DOI URI."
       - metric_test_identifier: CLFIP-F1-02D-6
         metric_test_name: "Check to see if the Resource ResourceProxy is a HTTP doi"
         metric_test_score: 1
         metric_test_requirements:
           - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { starts-with($a, ''http://doi.org/10.'') })'
             modality: any
+        metric_test_guidance: "Each ResourceProxy ResourceRef should start with 'http://doi.org/10.' to indicate an HTTP DOI URI."
       - metric_test_identifier: CLFIP-F1-02D-7
         metric_test_name: "Check to see if the Resource ResourceProxy is a valid URI"
         metric_test_score: 0.5
         metric_test_requirements:
           - test: 'xpath:for-each(//cmd:ResourceProxy[cmd:ResourceType=''Resource'']/cmd:ResourceRef, function($a) { $a castable as xs:anyURI })'
             modality: any
+        metric_test_guidance: "Each ResourceProxy ResourceRef should be castable to xs:anyURI and therefore syntactically valid."
 
   - metric_identifier: CLFIP-F2-01M
     metric_number: 3
@@ -113,6 +128,7 @@ metrics:
     target: Metadata
     modality: all
     max_score: 4
+    metric_guidance: "The metadata schema should be a standard schema that is widely used and recognized in the community. Examples include Dublin Core, DataCite Metadata Schema, and others."
     metric_tests:
       - metric_test_identifier: CLFIP-F2-01M-1
         metric_test_name: "Facet coverage score of the used CMD profile is larger than .2"
@@ -120,12 +136,14 @@ metrics:
         metric_test_requirements:
           - test: "xpath:xs:decimal(doc(concat('http://localhost:8000/proxy?accept=application/xml&amp;url=',encode-for-uri(concat('https://curation.clarin.eu/curate?url-input=',encode-for-uri(concat('https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/',//cmd:MdProfile,'/xsd'))))))//cmdProfileReport/facetReport/@score) > 0.2"
             modality: all
+        metric_test_guidance: "The CMD profile facet coverage score should be greater than 0.2."
       - metric_test_identifier: CLFIP-F2-01M-2
         metric_test_name: "Facet coverage score of the used CMD profile is larger than .8"
         metric_test_score: 3
         metric_test_requirements:
           - test: "xpath:xs:decimal(doc(concat('http://localhost:8000/proxy?accept=application/xml&amp;url=',encode-for-uri(concat('https://curation.clarin.eu/curate?url-input=',encode-for-uri(concat('https://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/1.x/profiles/',//cmd:MdProfile,'/xsd'))))))//cmdProfileReport/facetReport/@score) > 0.8"
             modality: all
+        metric_test_guidance: "The CMD profile facet coverage score should be greater than 0.8 for higher findability quality."
   - metric_identifier: CLFIP-F3-01M
     metric_number: 4
     metric_name: "Metadata linkage technology"
@@ -134,6 +152,7 @@ metrics:
     target: Metadata
     modality: any
     max_score: 1
+    metric_guidance: "The technology that links the persistent identifiers of your data to the metadata description should be a standard technology that is widely used and recognized in the community. Examples include OAI-PMH, ResourceSync, and others."
     metric_tests:
       #      - metric_test_identifier: CLFIP-F3-01M-0
       #        metric_test_name: "Number of resource proxies"
@@ -147,12 +166,14 @@ metrics:
         metric_test_requirements:
           - test: "xpath:(count(//cmd:ResourceProxy) gt 1)"
             modality: all
+        metric_test_guidance: "Provide more than one cmd:ResourceProxy to show richer links between metadata and resources."
       - metric_test_identifier: CLFIP-F3-01M-2
         metric_test_name: "One resource proxy avaiable"
         metric_test_score: 0.5
         metric_test_requirements:
           - test: "xpath:(count(//cmd:ResourceProxy) eq 1)"
             modality: all
+        metric_test_guidance: "Provide at least one cmd:ResourceProxy to establish a metadata-to-resource link."
 
   - metric_identifier: CLFIP-F4-01M
     metric_number: 5
@@ -162,6 +183,7 @@ metrics:
     target: Metadata
     modality: any
     max_score: 1
+    metric_guidance: "The metadata records should be indexed in search engines that are widely used and recognized in the community. Examples include Google Scholar, Microsoft Academic, and others."
     metric_tests:
       - metric_test_identifier: CLFIP-F4-01M-1
         metric_test_name: "CLARIAH partners that are also CLARIN partners"
@@ -170,6 +192,7 @@ metrics:
           - test: "xpath:$facets/js:map/js:string[@key='_harvesterRoot']='CLARIN Partners'"
             variables: [ "facets=json-to-xml($FACETS)" ]
             modality: all
+        metric_test_guidance: "Expose metadata so VLO facets indicate '_harvesterRoot' equals 'CLARIN Partners'."
       - metric_test_identifier: CLFIP-F4-01M-2
         metric_test_name: "CLARIAH partners that are also NDE partners"
         metric_test_score: 1
@@ -177,6 +200,7 @@ metrics:
           - test: "xpath:$facets//js:map/js:string[@key='_harvesterRoot']='NDE'"
             variables: [ "facets=json-to-xml($FACETS)" ]
             modality: all
+        metric_test_guidance: "Expose metadata so VLO facets indicate '_harvesterRoot' equals 'NDE'."
   - metric_identifier: CLFIP-F4-02D
     metric_number: 6
     metric_name: "Data search"
@@ -185,6 +209,7 @@ metrics:
     target: Data
     modality: all
     max_score: 5
+    metric_guidance: "The datasets should be indexed in search engines that are widely used and recognized in the community. Examples include Google Dataset Search, Microsoft Academic, and others."
     metric_tests:
       - metric_test_identifier: CLFIP-F4-02D-1
         metric_test_name: "Search data via a search service"
@@ -192,12 +217,14 @@ metrics:
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='SearchService'])"
             modality: all
+        metric_test_guidance: "Include a cmd:ResourceProxy with cmd:ResourceType set to 'SearchService'."
       - metric_test_identifier: CLFIP-F4-02D-2
         metric_test_name: "Search data via a search page"
         metric_test_score: 3
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='SearchPage'])"
             modality: all
+        metric_test_guidance: "Include a cmd:ResourceProxy with cmd:ResourceType set to 'SearchPage'."
 
   - metric_identifier: CLFIP-A1.1-01M
     metric_number: 7
@@ -207,6 +234,7 @@ metrics:
     target: Metadata
     modality: any
     max_score: 1
+    metric_guidance: "The standardized communication protocol for metadata records should be a widely used and recognized protocol in the community. Examples include OAI-PMH, ResourceSync, and others."
     metric_tests:
       - metric_test_identifier: CLFIP-A1.1-01M-1
         metric_test_name: "All metadata identifiers use HTTPS"
@@ -214,12 +242,14 @@ metrics:
         metric_test_requirements:
           - test: "xpath:empty((//cmd:MsSelfLink,//cmd:ResourceProxy[cmd:ResourceType='Metadata']/cmd:ResourceRef)[not(starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:'))])"
             modality: all
+        metric_test_guidance: "Ensure all metadata identifiers use HTTPS URLs or accepted PID schemes (doi:, hdl:)."
       - metric_test_identifier: CLFIP-A1.1-01M-2
         metric_test_name: "Some metadata identifiers use HTTPS"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:exists((//cmd:MsSelfLink,//cmd:ResourceProxy[cmd:ResourceType='Metadata']/cmd:ResourceRef)[starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:')])"
             modality: all
+        metric_test_guidance: "At least one metadata identifier should use HTTPS or an accepted PID scheme (doi:, hdl:)."
 
   - metric_identifier: CLFIP-A1.1-02D
     metric_number: 8
@@ -229,6 +259,7 @@ metrics:
     target: Data
     modality: any
     max_score: 1
+    metric_guidance: "The standardized communication protocol for datasets should be a widely used and recognized protocol in the community. Examples include OAI-PMH, ResourceSync, and others."
     metric_tests:
       - metric_test_identifier: CLFIP-A1.1-02D-1
         metric_test_name: "All data identifiers use HTTPS"
@@ -236,12 +267,14 @@ metrics:
         metric_test_requirements:
           - test: "xpath:empty(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef[not(starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:'))])"
             modality: all
+        metric_test_guidance: "Ensure all data identifiers use HTTPS URLs or accepted PID schemes (doi:, hdl:)."
       - metric_test_identifier: CLFIP-A1.1-02D-2
         metric_test_name: "Some data identifiers use HTTPS"
         metric_test_score: 1
         metric_test_requirements:
           - test: "xpath:exists(//cmd:ResourceProxy[cmd:ResourceType='Resource']/cmd:ResourceRef[starts-with(.,'https://') or starts-with(.,'doi:') or starts-with(.,'hdl:')])"
             modality: all
+        metric_test_guidance: "At least one data identifier should use HTTPS or an accepted PID scheme (doi:, hdl:)."
 
 created_by: CLARIAH-FIP
 date_created: 2023-03-01

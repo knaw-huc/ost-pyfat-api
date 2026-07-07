@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.cors import CORSMiddleware
 
-from src.ost_pyfat_api.api.v1 import root, tests, health, metrics
+from src.ost_pyfat_api.api.v1 import root, tests, health, metrics, guidance
 from src.ost_pyfat_api.infra.commons import app_settings, get_project_details, build_date
 from src.ost_pyfat_api.utils.metrics_processor import MetricsProcessor
 
@@ -65,6 +65,7 @@ app.add_middleware(
 app.include_router(tests.router, tags=["Tests"], prefix="")
 app.include_router(root.router, prefix="")
 app.include_router(metrics.router, tags=["Metrics"], prefix="")
+app.include_router(guidance.router, tags=["Guidance"], prefix="")
 app.include_router(health.router, tags=["Health"], prefix="")
 
 @app.exception_handler(StarletteHTTPException)

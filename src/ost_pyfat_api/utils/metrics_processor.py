@@ -127,3 +127,64 @@ class MetricsProcessor:
     @classmethod
     def get_infrastructure(cls) -> str | None:
         return cls._metrics_infra
+
+    @classmethod
+    def get_metric_guidance_by_metricid(cls, metric_id: str) -> str | None:
+        """Return the guidance text for a given metric identifier."""
+        for metric in cls._metrics_list:
+            if metric.get('metric_identifier') != metric_id:
+                continue
+
+            guidance = metric.get('metric_guidance')
+            if guidance is None:
+                return None
+
+            if isinstance(guidance, str):
+                return guidance
+
+            if isinstance(guidance, dict):
+                for key in ('en', 'eng', 'english', 'default', 'text', 'value'):
+                    value = guidance.get(key)
+                    if isinstance(value, str) and value.strip():
+                        return value
+                return None
+
+            if isinstance(guidance, list):
+                parts = [item for item in guidance if isinstance(item, str) and item.strip()]
+                return '\n'.join(parts) if parts else None
+
+            return str(guidance)
+
+        return None
+
+    @classmethod
+    def get_all_metric_guidance(cls) -> Dict[str, str]:
+        """Gets all metric guidance texts as value by metric_identifier as dict key."""
+        guidance_map = {}
+        for metric in cls._metrics_list:
+            metric_id = metric.get('metric_identifier')
+            guidance_text = metric.get('metric_guidance')
+            if guidance_text is not None:
+                guidance_map[metric_id] = guidance_text
+        return guidance_map
+
+    @classmethod
+    def get_all_test_guidance(cls) -> Dict[str, str]:
+        """Gets all test guidance texts as value by metric_test_identifier as dict key."""
+        tset_guidance_map = {}
+        for metric in cls._metrics_list:
+            for test in metric.get('metric_tests', []):
+                test_id = test.get('metric_test_identifier')
+                guidance_text = test.get('metric_test_guidance')
+                if guidance_text is not None:
+                    tset_guidance_map[test_id] = guidance_text
+        return tset_guidance_map
+
+    @classmethod
+    def get_metric_by_metricid(cls, metric_id: str) -> dict | None:
+        """Return the Metric object for a given metric identifier."""
+        for metric in cls._metrics_list:
+            if metric.get('metric_identifier') != metric_id:
+                continue
+            return metric
+        return None

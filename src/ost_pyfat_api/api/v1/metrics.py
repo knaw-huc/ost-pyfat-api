@@ -17,7 +17,7 @@ ENDPOINT = app_settings.ENDPOINT
 router = APIRouter(prefix=API_PREFIX)
 
 preproc = MetricsProcessor(app_settings.get("metrics_file", None))
-@router.get("/metrics/", tags=["Metrics"], summary="Get all metrics", description="Returns metadata for all available metrics.",
+@router.get("/metrics/", tags=["Metrics"], summary="Get all metrics", description="Returns metadata for all available metrics. Use the Accept header to select the response format.",
             responses={
                 200: {
                     "content": {

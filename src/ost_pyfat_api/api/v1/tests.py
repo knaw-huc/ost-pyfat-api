@@ -71,6 +71,9 @@ async def post_test(
         ftr_output = _new_ftr_output()
         ftr_output.add_testresult(test_result)
         ftr_output.add_ftr_test_metadata(_build_test_metadata(tst_id))
+        # Add guidance if test fails:
+        if test_result.result == TestResultValue.FAIL:
+            ftr_output.add_guidance_triples(tst_id, preproc, True)
 
         if accept and "text/turtle" in accept:
             # Serialize to Turtle
@@ -88,7 +91,7 @@ async def post_test(
             content={"detail": f"Failed to run test[{tst_id}] for res[{resource_identifier}]", "error": str(exc)},
         )
 
-@router.get("/tests/", tags=["Tests"], summary="Get all tests", description="Returns metadata for all available tests.",
+@router.get("/tests/", tags=["Tests"], summary="Get all tests", description="Returns metadata for all available tests. Use the Accept header to select the response format.",
             responses={
                 200: {
                     "content": {
@@ -126,7 +129,7 @@ async def get_all_tests(accept: Optional[str] = Header(None)):
     "/tests/{tst_id}",
     tags=["Tests"],
     summary="Get FTR test metadata by test-ID.",
-    description="Returns test metadata for a specific test following the FTR specification.",
+    description="Returns test metadata for a specific test following the FTR specification. Use the Accept header to select the response format.",
     responses={
         200: {
             "content": {

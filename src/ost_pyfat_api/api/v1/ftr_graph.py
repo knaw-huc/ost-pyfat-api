@@ -162,6 +162,7 @@ class FtrClasses:
         manifestation = URIRef(f"{DOMAIN}/{resource_segment}/{metric_id}")
 
         self.g.add((guidance_uri, RDF.type, self.fgv.Instructions))
+        self.g.add((guidance_uri, RDF.type, self.fgv.Guidance))
         self.g.add((guidance_uri, self.dct.description, Literal(guidance_text, lang="en")))
         self.g.add((guidance_uri, self.dct.identifier, Literal(metric_id, datatype=XSD.string)))
         self.g.add((guidance_uri, self.dct.title, Literal(f"Guidance for {metric_id}", lang="en")))

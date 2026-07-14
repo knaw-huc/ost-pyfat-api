@@ -151,6 +151,8 @@ async def get_test_by_id(tst_id: str, accept: Optional[str] = Header(None)):
     test_metadata = _build_test_metadata(tst_id)
     ftr_output = _new_ftr_output()
     ftr_output.add_ftr_test_metadata(test_metadata)
+    #Add test Guidance:
+    ftr_output.add_guidance_triples(tst_id, preproc)
 
     try:
         if accept and "text/turtle" in accept:

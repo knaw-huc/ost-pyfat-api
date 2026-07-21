@@ -70,6 +70,8 @@ class FtrClasses:
         # TODO: How can one determine TEST completion as a percentage, if a test result can only be True or False or Indeterminate?
         # Until mistery solved:
         self.g.add((tstresult, self.ftr.completion, Literal(testresult.completion, datatype=XSD.integer)))
+        if testresult.guidance_iri:
+            self.g.add((tstresult, self.ftr.suggestion, testresult.guidance_iri))
 
     def add_ftr_test_metadata(self, testmetadata: FtrTestMetadata) -> None:
         test_uri = URIRef(testmetadata.uri)
@@ -133,7 +135,7 @@ class FtrClasses:
         context = {prefix: str(ns) for prefix, ns in self.namespaces.items()}
         return self.g.serialize(format='json-ld', context=context, indent=2)
 
-    def add_guidance_triples(self, metric_id: str, preproc, is_testresult: bool = False) -> None:
+    def add_guidance_triples(self, metric_id: str, preproc, is_testresult: bool = False) -> URIRef:
         """Add guidance RDF triples for a metric or metric test identifier.
 
         Automatically looks up the guidance text from the metrics YAML based on whether
@@ -180,3 +182,4 @@ class FtrClasses:
             self.g.add((guidance_uri, self.fgv.relatesToFAIRPrinciple, fair_principle_uri))
 
         self.g.add((guidance_uri, self.fgv.supports, supports_target))
+        return guidance_uri

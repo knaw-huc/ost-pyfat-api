@@ -69,11 +69,13 @@ async def post_test(
         test_result = evaluate(tst_id, resource_identifier)
         test_result.fromTestIRI = f"{DOMAIN}{API_PREFIX}/tests/{tst_id}"
         ftr_output = _new_ftr_output()
-        ftr_output.add_testresult(test_result)
-        ftr_output.add_ftr_test_metadata(_build_test_metadata(tst_id))
         # Add guidance if test fails:
         if test_result.result == TestResultValue.FAIL:
-            ftr_output.add_guidance_triples(tst_id, preproc, True)
+            guidance_iri = ftr_output.add_guidance_triples(tst_id, preproc, True)
+            test_result.guidance_iri = guidance_iri
+        ftr_output.add_testresult(test_result)
+        ftr_output.add_ftr_test_metadata(_build_test_metadata(tst_id))
+
 
         if accept and "text/turtle" in accept:
             # Serialize to Turtle

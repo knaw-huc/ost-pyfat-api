@@ -8,4 +8,4 @@ cors_origins = ["*"]
 reload_enable = true
 domain = "https://pyfat.sd.di.huc.knaw.nl"
 
-metrics_file = "https://raw.githubusercontent.com/CLARIAH/pyFAT/refs/heads/develop/src/pyfat/resources/metrics/clarin_fip_metrics_v0.3.yaml" # internet file or local
+metrics_file = "https://raw.githubusercontent.com/knaw-huc/ost-pyfat-api/refs/heads/clarin-test/src/resources/metrics/clarin_fip_metrics_v0.3.yaml" # internet file or local
